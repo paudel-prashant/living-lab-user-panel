@@ -18,6 +18,7 @@ import ScienceOutlinedIcon from '@mui/icons-material/ScienceOutlined'
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded'
 
 const navItems = [
+  { label: 'Events', id: 'events' },
   { label: 'About', id: 'about' },
   { label: 'User Panel', id: 'user-panel' },
   { label: 'Future Features', id: 'future-features' },

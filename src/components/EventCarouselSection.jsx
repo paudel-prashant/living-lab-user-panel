@@ -44,7 +44,11 @@ function EventCarouselSection() {
   const currentSlide = slides[activeStep]
 
   useEffect(() => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) return undefined
+
     const interval = window.setInterval(() => {
+      if (document.visibilityState === 'hidden') return
       setActiveStep((prev) => (prev + 1) % maxSteps)
     }, 5000)
     return () => window.clearInterval(interval)
@@ -54,7 +58,11 @@ function EventCarouselSection() {
   const handleBack = () => setActiveStep((prev) => (prev - 1 + maxSteps) % maxSteps)
 
   return (
-    <Box component="section" id="events" sx={{ py: { xs: 8, md: 10 }, bgcolor: 'background.paper' }}>
+    <Box
+      component="section"
+      id="events"
+      sx={{ py: { xs: 8, md: 10 }, bgcolor: 'background.paper', scrollMarginTop: { xs: 72, md: 80 } }}
+    >
       <Container maxWidth="lg">
         <Typography
           variant="h3"

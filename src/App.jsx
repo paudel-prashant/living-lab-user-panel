@@ -1,11 +1,21 @@
+import { Suspense, lazy } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import { CssBaseline, ThemeProvider } from '@mui/material'
+import { Box, CircularProgress, CssBaseline, ThemeProvider } from '@mui/material'
 import { appTheme } from './theme'
 import Navbar from './components/Navbar'
 import ScrollToTop from './components/ScrollToTop'
 import FeedbackWidget from './components/FeedbackWidget'
-import HomePage from './pages/HomePage'
-import SurveyPage from './pages/SurveyPage'
+
+const HomePage = lazy(() => import('./pages/HomePage'))
+const SurveyPage = lazy(() => import('./pages/SurveyPage'))
+
+function AppLoadingFallback() {
+  return (
+    <Box sx={{ minHeight: '45vh', display: 'grid', placeItems: 'center' }}>
+      <CircularProgress size={34} />
+    </Box>
+  )
+}
 
 function App() {
   return (
@@ -14,10 +24,12 @@ function App() {
       <BrowserRouter>
         <ScrollToTop />
         <Navbar />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/survey" element={<SurveyPage />} />
-        </Routes>
+        <Suspense fallback={<AppLoadingFallback />}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/survey" element={<SurveyPage />} />
+          </Routes>
+        </Suspense>
         <FeedbackWidget />
       </BrowserRouter>
     </ThemeProvider>

@@ -82,17 +82,21 @@ function FeedbackWidget() {
         color="secondary"
         variant="extended"
         onClick={() => setOpen(true)}
+        aria-label="Open feedback form"
         sx={{
           position: 'fixed',
           right: { xs: 16, sm: 24 },
-          bottom: { xs: 16, sm: 24 },
+          bottom: { xs: 'calc(env(safe-area-inset-bottom) + 16px)', sm: 24 },
           zIndex: (theme) => theme.zIndex.tooltip,
           boxShadow: '0 14px 32px rgba(124, 58, 237, 0.35)',
           '&:hover': { boxShadow: '0 18px 36px rgba(124, 58, 237, 0.45)' },
+          '.fab-label': { display: { xs: 'none', sm: 'inline' } },
         }}
       >
-        <FeedbackOutlinedIcon sx={{ mr: 1 }} />
-        Feedback
+        <FeedbackOutlinedIcon sx={{ mr: { xs: 0, sm: 1 } }} />
+        <Box component="span" className="fab-label">
+          Feedback
+        </Box>
       </Fab>
 
       <Dialog open={open} onClose={() => !isSubmitting && setOpen(false)} fullWidth maxWidth="sm">
