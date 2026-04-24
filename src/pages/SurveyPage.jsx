@@ -134,10 +134,15 @@ const Q12 = [
   { v: 'not_now', l: 'Not now' },
 ]
 
+const getSingleLabel = (options, value) => options.find((o) => o.v === value)?.l || value || '-'
+const getMultiLabel = (options, values) =>
+  values?.length ? values.map((v) => options.find((o) => o.v === v)?.l || v).join(', ') : '-'
+
 function SurveyPage() {
   const [answers, setAnswers] = useState(initialAnswers)
   const [q8Hint, setQ8Hint] = useState('')
-  const [snack, setSnack] = useState({ open: false, message: '' })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [snack, setSnack] = useState({ open: false, message: '', severity: 'success' })
 
   const setField = useCallback((key, value) => {
     setAnswers((prev) => ({ ...prev, [key]: value }))
@@ -166,13 +171,63 @@ function SurveyPage() {
     [answers],
   )
 
-  const handleSubmit = (e) => {
+  const formattedMessage = useMemo(
+    () =>
+      [
+        `Submitted At: ${payload.submittedAt}`,
+        '',
+        `Q1: ${getSingleLabel(Q1, payload.q1)}`,
+        `Q2: ${getSingleLabel(Q2, payload.q2)}${payload.q2Other ? ` | Other: ${payload.q2Other}` : ''}`,
+        `Q3: ${getSingleLabel(Q3, payload.q3)}`,
+        `Q4: ${payload.q4 || '-'}`,
+        `Q5: ${getSingleLabel(Q5, payload.q5)}`,
+        `Q6: ${getMultiLabel(Q6, payload.q6)}`,
+        `Q7: ${getMultiLabel(Q7, payload.q7)}${payload.q7Other ? ` | Other: ${payload.q7Other}` : ''}`,
+        `Q8: ${getMultiLabel(Q8, payload.q8)}${payload.q8Other ? ` | Other: ${payload.q8Other}` : ''}`,
+        `Q9: ${getMultiLabel(Q9, payload.q9)}${payload.q9Other ? ` | Other: ${payload.q9Other}` : ''}`,
+        `Q10: ${getMultiLabel(Q10, payload.q10)}${payload.q10Other ? ` | Other: ${payload.q10Other}` : ''}`,
+        `Q11: ${getMultiLabel(Q11, payload.q11)}`,
+        `Q12: ${getSingleLabel(Q12, payload.q12)}`,
+      ].join('\n'),
+    [payload],
+  )
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // Ready for future: POST /api/survey with JSON body
-    console.log('Living Lab User Survey submission', payload)
-    setSnack({ open: true, message: 'Thank you! Your answers were recorded in this prototype (check the console).' })
-    setAnswers(initialAnswers)
-    setQ8Hint('')
+    setIsSubmitting(true)
+    try {
+      const response = await fetch('https://formspree.io/f/mjgjlgjp', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          _subject: `Living Lab User Survey — ${payload.submittedAt}`,
+          message: formattedMessage,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Formspree submission failed')
+      }
+
+      setSnack({
+        open: true,
+        severity: 'success',
+        message: 'Thank you! Your survey response has been submitted.',
+      })
+      setAnswers(initialAnswers)
+      setQ8Hint('')
+    } catch {
+      setSnack({
+        open: true,
+        severity: 'error',
+        message: 'Sorry, something went wrong. Please try again.',
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const section = (title, children) => (
@@ -446,12 +501,18 @@ function SurveyPage() {
 
           <Divider sx={{ my: 3 }} />
 
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="flex-end">
-            <Button type="button" variant="outlined" color="inherit" onClick={() => setAnswers(initialAnswers)}>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ justifyContent: 'flex-end' }}>
+            <Button
+              type="button"
+              variant="outlined"
+              color="inherit"
+              onClick={() => setAnswers(initialAnswers)}
+              disabled={isSubmitting}
+            >
               Reset form
             </Button>
-            <Button type="submit" variant="contained" color="primary" size="large">
-              Submit survey
+            <Button type="submit" variant="contained" color="primary" size="large" disabled={isSubmitting}>
+              {isSubmitting ? 'Submitting...' : 'Submit survey'}
             </Button>
           </Stack>
         </Box>
@@ -465,7 +526,7 @@ function SurveyPage() {
       >
         <Alert
           onClose={() => setSnack((s) => ({ ...s, open: false }))}
-          severity="success"
+          severity={snack.severity}
           variant="filled"
           sx={{ width: '100%' }}
         >
