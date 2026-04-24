@@ -22,7 +22,7 @@ function FutureFeaturesSection() {
       sx={{ py: { xs: 8, md: 10 }, bgcolor: 'background.paper', scrollMarginTop: { xs: 72, md: 80 } }}
     >
       <Container maxWidth="md">
-        <Stack direction="row" spacing={1.5} alignItems="center" justifyContent="center" sx={{ mb: 2 }}>
+        <Stack direction="row" spacing={1.5} sx={{ mb: 2, alignItems: 'center', justifyContent: 'center' }}>
           <RocketLaunchOutlinedIcon color="primary" />
           <Typography variant="h3" component="h2" sx={{ fontSize: { xs: '1.65rem', md: '2rem' } }}>
             Future features
@@ -36,7 +36,7 @@ function FutureFeaturesSection() {
           This prototype focuses on storytelling and the survey experience. Upcoming releases will connect
           to a backend so you can manage participation end-to-end.
         </Typography>
-        <Stack direction="row" gap={1} flexWrap="wrap" justifyContent="center">
+        <Stack direction="row" gap={1} sx={{ flexWrap: 'wrap', justifyContent: 'center' }}>
           {roadmap.map((label) => (
             <Chip
               key={label}

@@ -1,6 +1,7 @@
 import { useLayoutEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import HeroSection from '../components/HeroSection'
+import EventCarouselSection from '../components/EventCarouselSection'
 import AboutSection from '../components/AboutSection'
 import UserPanelSection from '../components/UserPanelSection'
 import FutureFeaturesSection from '../components/FutureFeaturesSection'
@@ -23,6 +24,7 @@ function HomePage() {
   return (
     <>
       <HeroSection />
+      <EventCarouselSection />
       <AboutSection />
       <UserPanelSection />
       <FutureFeaturesSection />
